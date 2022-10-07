@@ -1,0 +1,57 @@
+{
+  "meter_config": [
+    {
+      "dlms": {
+        "idRequest": "UUID",
+        "gWsn": "",
+        "gWip": "",
+        "meterList": [
+          {
+            "serialNumber": "Meter1SerialNumber",
+            "protocolConfig": {
+              "logicalAddress": "0x01",
+              "clientId": "0x64",
+              "baudrate": "115200",
+              "initialBaud": "115200",
+              "framing": "8,N,1",
+              "referenceType": "LN",
+              "protocolType": "DLMS",
+              "interfaceType": "RS485",
+              "levelAuthentication": "Low",
+              "meterPassword": "23322332",
+              "meterBrand": "Elster",
+              "meterModel": "ALPH1800",
+              "hdlcAddress": "0x11"
+            }
+          }
+        ]
+      },
+      "mbus": {
+        "k": "v"
+      },
+      "st": {
+        "k": "v"
+      }
+    }
+  ],
+  "on_demand": [
+    {
+      "gwclocktime": {
+        "idRequest": "UUID",
+        "time": 1604509280,
+        "gWsn": "XXXXXXXX",
+        "gWip": "xxxxxxx"
+      },
+      "gwsynchronization": {
+        "idRequest": "UUID",
+        "time": 0,
+        "gWsn": "",
+        "gWip": "",
+        "date": 0
+      },
+
+    }
+  ]
+}
+
+
