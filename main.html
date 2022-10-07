@@ -9,11 +9,12 @@
     <!-- CSS only -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <link rel="stylesheet" href="inc/main.css">
     <title>Final Test</title>
 </head>
 <body onload="populateList()">
 <div class="container">
-    <div class="card" style="margin-top: 1.5em">
+    <div class="card" style="">
         <h5 class="card-header">Add Data</h5>
         <div class="card-body">
             <form onsubmit="addToDatabase()">
@@ -35,24 +36,32 @@
     <div class="card-deck" style="display: flex">
         <div class="card" style="width: 30%">
             <div class="card-body">
-                <div class="input-group input-group-sm mb-3">
-                    <div class="input-group-prepend">
-                        Select Meter:
+                <form >
+                    <label for="meter_list">Meter</label>
+                    <div class="form-group">
+                        <div id="meter_list" name="meter_list"></div>
                     </div>
-<!--                    <div id="meter_list" name="meter_list" class="form-control" aria-label="Small"-->
-<!--                         aria-describedby="inputGroup-sizing-sm"></div>-->
-                    <div id="meter_list" name="meter_list" class="form-check form-check-inline">
+                    <br>
+                    <div class="form-group">
+                        <label for="gateway_list">Gateway:</label> <select class="col-md-8"> id="gateway_list"></select> <br>
                     </div>
-                </div>
-                <br>
-                Select Gateway: <select id="gateway_list"></select> <br>
-                Select IP: <select id="ip_list"></select> <br>
-                Request:<input id="requestName" autoComplete="on" list="suggestions"/>
-                <datalist id="suggestions"></datalist>
-                <br>
-                From: <input type="datetime-local" name="dt_from" id="dt_from"><br>
-                To:<input type="datetime-local" name="dt_to" id="dt_to"><br><br>
-                <button type="submit" onclick="createRequest()">Create Request</button>
+                    <div class="form-group">
+                        <label for="ip_list">IP:</label> <select  class="col-md-8"> id="ip_list"></select> <br>
+                    </div>
+                    <div class="form-group">
+                        <label for="requestName">Request:</label>
+                        <input id="requestName" class="col-md-8" autoComplete="on" list="suggestions"/>
+                        <datalist id="suggestions"></datalist>
+                        <br>
+                    </div>
+                    <div class="form-group">
+                        <label for="dt_from">From:</label> <input class="col-md-8" type="datetime-local" name="dt_from" id="dt_from"><br>
+                    </div>
+                    <div class="form-group">
+                        <label for="dt_to">To:</label><input class="col-md-8" type="datetime-local" name="dt_to" id="dt_to"><br><br>
+                    </div>
+                    <button type="submit" onclick="createRequest()">Create Request</button>
+                </form>
             </div>
         </div>
 
