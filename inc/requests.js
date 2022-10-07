@@ -58,6 +58,7 @@ function requestReconnection() {
     let obj = createBasicRequest();
     obj.type = "DISCONNECTION";
     obj.mode = "Mode4";
+    obj = addDevices(obj);
     req.innerHTML = JSON.stringify(obj, undefined, 2);
 }
 
