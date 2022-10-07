@@ -53,12 +53,10 @@ function populateList() {
     });
 
     if (savedGateway !== null) {
-        savedGateway.forEach(option => {
+        savedGateway.forEach(option =>
                 gatewayListOptions.add(
                     new Option(option.replace(/['"]+/g, ''), option.replace(/['"]+/g, ''))
-                );
-                gatewayListOptions.classList.add("form-control");
-            }
+                )
         );
     }
 
@@ -77,7 +75,7 @@ function populateList() {
             checkBox.type = "checkbox";
             checkBox.value = savedMeters[i].replace(/['"]+/g, '');
             checkBox.checked = false;
-            checkBox.classList.add("form-control");
+            // checkBox.classList.add("form-control");
             label.appendChild(checkBox);
             meter_list.appendChild(label);
             label.appendChild(document.createTextNode(savedMeters[i].replace(/['"]+/g, '')));
