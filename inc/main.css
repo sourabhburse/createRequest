@@ -1,24 +1,28 @@
-.checkbox-inline input{
-  margin: 0px 4px 0px 0px;
+.card {
+    padding: 20px 20px 20px 20px;
+    margin-top: 30px;
 }
 
-.checkbox-inline{
-    margin: 0px 20px 0px 3px;
+.accordion {
+    margin: 15px;
 }
 
-.container .card{
-    margin-top: 1.5em;
+#Add, #delete {
+    margin-top: 32px;
 }
 
-.form-group{
-    margin: 10px 0px 10px 0px;
+#delete {
+    margin-left: -50px;
 }
 
-.form-group label{
-    padding-right: 3px;
-    text-align: left!important;
+.container .row-md-12 {
+    margin-bottom: 10px;
 }
 
-.form-group .col-md-8{
-    align-content: flex-end;
+pre {
+    margin: 40px;
+}
+
+pre .position-absolute {
+
 }

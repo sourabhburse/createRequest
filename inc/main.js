@@ -12,7 +12,7 @@ function addMeter(meterSerialNumber) {
     if (existingMeters == null) existingMeters = [];
     existingMeters.push(JSON.stringify(meterSerialNumber));
     localStorage.setObj("AllMeters", existingMeters);
-    alert("Meter " + meterSerialNumber + " Added Successfully");
+    // alert("Meter " + meterSerialNumber + " Added Successfully");
 }
 
 function addGateway(gatewaySerialNumber) {
@@ -20,7 +20,7 @@ function addGateway(gatewaySerialNumber) {
     if (existingGateways == null) existingGateways = [];
     existingGateways.push(JSON.stringify(gatewaySerialNumber));
     localStorage.setObj("AllGateways", existingGateways);
-    alert("Meter " + gatewaySerialNumber + " Added Successfully");
+    // alert("Gateway " + gatewaySerialNumber + " Added Successfully");
 }
 
 function addIp(ip) {
@@ -28,7 +28,7 @@ function addIp(ip) {
     if (exisitngIp == null) exisitngIp = [];
     exisitngIp.push(JSON.stringify(ip));
     localStorage.setObj("AllIp", exisitngIp);
-    alert("Meter " + ip + " Added Successfully");
+    // alert("Meter " + ip + " Added Successfully");
 }
 
 function addToDatabase() {
@@ -54,9 +54,9 @@ function populateList() {
 
     if (savedGateway !== null) {
         savedGateway.forEach(option =>
-                gatewayListOptions.add(
-                    new Option(option.replace(/['"]+/g, ''), option.replace(/['"]+/g, ''))
-                )
+            gatewayListOptions.add(
+                new Option(option.replace(/['"]+/g, ''), option.replace(/['"]+/g, ''))
+            )
         );
     }
 
@@ -72,16 +72,27 @@ function populateList() {
         for (let i = 0; i < savedMeters.length; i++) {
             var checkBox = document.createElement("input");
             var label = document.createElement("label");
+            var div = document.createElement("div");
+            div.classList += "form-check form-check-inline";
             checkBox.type = "checkbox";
             checkBox.value = savedMeters[i].replace(/['"]+/g, '');
             checkBox.checked = false;
-            // checkBox.classList.add("form-control");
-            label.appendChild(checkBox);
-            meter_list.appendChild(label);
+            checkBox.classList += "form-check-input";
+            label.classList += "form-check-label";
+            div.appendChild(checkBox);
+            div.appendChild(label);
+            meter_list.appendChild(div)
             label.appendChild(document.createTextNode(savedMeters[i].replace(/['"]+/g, '')));
         }
+    } else {
+        var div = document.createElement("div");
+        div.textContent = "Please Add Meters";
+        div.style.fontStyle = "italic";
+        div.style.color= "Red";
+        meter_list.appendChild(div);
     }
 }
+
 
 ////////////////////////////////////////
 function generateUUID() {

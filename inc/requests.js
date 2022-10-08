@@ -23,6 +23,7 @@ function addParameters(obj) {
 }
 
 function createBasicRequest() {
+    document.getElementById("copyBtn").style.display="block";
     let obj = new Object();
     let gw_sn = document.getElementById("gateway_list").value;
     let gw_ip = document.getElementById("ip_list").value;
@@ -71,6 +72,7 @@ function requestGatewaySync() {
 
 function createRequest() {
     let request_name = document.getElementById("requestName").value;
+    document.getElementById("reqname").innerHTML = request_name;
     switch (String(request_name)) {
         case "Energy Profile":
             requestType2();
