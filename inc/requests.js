@@ -1,6 +1,26 @@
-const requestTypes = ['Energy Profile', 'Load Profile1', 'Water Profile', 'Max Demand', 'Load Profile2', 'Instrumentation Profile', 'Instantaneous Values',
-    'Billing Profile', 'Clock Time', 'Get Profile Interval', 'Reconnection', 'Switch Status', 'Max Demand Reset', 'Get Gateway Clock Time',
-    'Gateway Sync', 'Clear Alarms', 'Meter Status', 'Gateway Nameplate', 'Gateway Ping', 'Meter Ping', 'Meter Nameplate'];
+const requestTypes = {
+    'Energy Profile': 'meter/energyprofile',
+    'Load Profile1': 'meter/loadprofile1',
+    'Water Profile': 'meter/waterprofile',
+    'Max Demand':'meter/maxdemand',
+    'Load Profile2':'meter/loadprofile2',
+    'Instrumentation Profile':'meter/instprofile',
+    'Instantaneous Values':'meter/instvalue',
+    'Billing Profile':'meter/billingprofile',
+    'Clock Time':'meter/clocktime',
+    'Get Profile Interval':'gateway/gwprofiletime',
+    'Reconnection':'meter/reconnection',
+    'Switch Status':'meter/switchstatus',
+    'Max Demand Reset':'meter/mdr',
+    'Get Gateway Clock Time':'gateway/gwclocktime',
+    'Gateway Sync':'gateway/gwsync',
+    'Clear Alarms':'gateway/clearalarms',
+    'Meter Status':'gateway/meterstatus',
+    'Gateway Nameplate':'gateway/nameplate',
+    'Gateway Ping':'gateway/ping',
+    'Meter Ping':'meter/ping',
+    'Meter Nameplate':'gateway/nameplate'
+};
 
 function addDevices(obj) {
     let checked_meters = document.querySelectorAll('input[type=checkbox]:checked');
@@ -23,7 +43,7 @@ function addParameters(obj) {
 }
 
 function createBasicRequest() {
-    document.getElementById("copyBtn").style.display="block";
+    // document.getElementById("copyBtn").style.display="block";
     let obj = new Object();
     let gw_sn = document.getElementById("gateway_list").value;
     let gw_ip = document.getElementById("ip_list").value;

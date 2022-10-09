@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Request</title>
+    <meta charset="UTF-8">
+    <script src="inc/main.js"></script>
+    <script src="inc/requests.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.10/dist/clipboard.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <link rel="stylesheet" href="/inc/main.css">
+</head>
+<body onload="populateList()">
+<div class="accordion" id="testaccord">
+    <div class="accordion-item">
+        <h4 class="accordion-header" id="headingOne">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                Click here to add data
+            </button>
+        </h4>
+        <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne"
+             data-bs-parent="#testaccord">
+            <div class="accordion-body">
+                <form class="row g-3">
+                    <div class="col-sm-3">
+                        <label for="meter_serialnumber" class="form-label">Meter Serial Number</label>
+                        <input type="text" class="form-control" name="meter_serialnumber" id="meter_serialnumber">
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="gw_serialnumber" class="form-label">Gateway Serial Number</label>
+                        <input type="text" class="form-control" name="gw_serialnumber" id="gw_serialnumber">
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="ip" class="form-label">IP</label>
+                        <input type="text" name="ip" id="ip" class="form-control" minlength="7" maxlength="15"
+                               size="15"
+                               pattern="^((\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$">
+                    </div>
+                    <div class="col-sm-1">
+                        <label for="Add" class="form-label"></label>
+                        <button type="submit" id="Add" class="btn btn-primary"
+                                onclick="addToDatabase()">Add
+                        </button>
+                    </div>
+                    <div class="col-sm-2">
+                        <label for="delete" class="form-label"></label>
+                        <button type="submit" id="delete" class="btn btn-danger">Delete All Data</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item">
+        <div class="accordion-body" id="headingTwo">
+            <div class="row">
+                <div class="col-sm-2">
+                    <label for="meter_list">Meter:</label>
+                    <div id="meter_list" name="meter_list"></div>
+                </div>
+                <div class="col-sm-2" style="width: 233px;">
+                    <label for="gateway_list">Gateway: </label>
+                    <select id="gateway_list" class="form-select"></select>
+                </div>
+                <div class="col-sm-2" style="width: 180px;">
+                    <label for="ip_list">IP: </label>
+                    <select id="ip_list" class="form-select"></select>
+                </div>
+                <div class="col-sm-2">
+                    <label for="requestName">Request:</label>
+                    <input id="requestName" class="form-control" placeholder="Type to search.." autoComplete="on"
+                           list="suggestions" onfocus="this.value=''" onchange="this.blur();"/>
+                    <datalist id="suggestions"></datalist>
+                </div>
+                <div class="col-sm-2">
+                    <label for="dt_from">From:</label>
+                    <input type="datetime-local" class="form-control" name="dt_from" id="dt_from">
+                </div>
+                <div class="col-sm-2">
+                    <label for="dt_to">To: </label>
+                    <input type="datetime-local" class="form-control" name="dt_to" id="dt_to">
+                </div>
+                <div class="row-sm-3" style="margin-top: 15px">
+                    <div class="col-sm-12">
+                        <button class="btn btn-primary" onclick="createRequest()">Create Request</button>
+                        <button class="btn btn-primary" onclick="mqtt_Publish_custom()">Create and Publish</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item">
+        <div class="accordian-body">
+        </div>
+        <div class="row">
+            <div class="col" style="width:50%;">
+                <form>
+                    <div class="container" style="margin: 10px 10px auto;">
+                        <div class="row">
+                            <div class="col-sm-6"> Broker:<input type="text" class="form-control"
+                                                                 id="txt_MQTT_Broker_URL"></div>
+                            <div class="col-sm-6"> Username:<input type="text" class="form-control"
+                                                                   id="txt_MQTT_username"></div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6"> Client:<input type="text" class="form-control"
+                                                                 id="txt_MQTT_Client_ID"></div>
+                            <div class="col-sm-6"> Password:<input type="password" class="form-control"
+                                                                   id="txt_MQTT_password"></div>
+                        </div>
+
+                        <div class="row" style="margin-top: 10px;width: 100%;">
+                            <button type="button" class="btn btn-success" id="btn_Connect_to_Broker"
+                                    onclick="mqtt_Connect_with_Broker();">Connect
+                            </button>
+                        </div>
+                        <hr>
+                        <div class="col-sm-12" style="margin-bottom: 30px;">
+                            <div class="row">
+                                <div class="col-sm-9">
+                                    Topic (Subscribe):
+                                    <input type="text" class="form-control" id="txt_MQTT_Subscribe_Topic"
+                                           placeholder="Type MQTT Topic here...">
+                                </div>
+                                <div class="col" style="padding-top: 23px;">
+                                    <button type="button" class="btn btn-primary"
+                                            onclick="mqtt_Subscribe_to_Topic();">Subscribe
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+            <div class="col">
+                <span id="reqname" style="font-weight: bold"></span>
+                <div class="card">
+                    <div class="card-body card-bordered d-flex flex-column">
+                        <pre id="req"></pre>
+                        <button class="align-self-end" data-clipboard-target="#req">
+                            Copy
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item">
+        <div class="accordion-body">
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="txtAr_Console">Console:</label>
+                <div class="col-sm-9">
+                            <textarea type="textarea" class="form-control" rows="12" cols="100"
+                                      id="txtAr_Console" style="margin-bottom: 10px;"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+</html>
+
+<script type="text/javascript">
+
+    //  Variables
+    var WebSocket_MQTT_Broker_URL = "";
+    var MQTT_Client_ID = "";
+    var MQTT_Topic = "";
+    var MQTT_Client = "";
+    var MQTT_Username = "";
+    var MQTT_Password = "";
+
+
+    function mqtt_Connect_with_Broker() {
+        // Set variables
+        WebSocket_MQTT_Broker_URL = document.getElementById("txt_MQTT_Broker_URL").value;
+        MQTT_Client_ID = document.getElementById("txt_MQTT_Client_ID").value;
+        MQTT_Username = document.getElementById("txt_MQTT_username").value;
+        MQTT_Password = document.getElementById("txt_MQTT_password").value;
+        // Create a MQTT Client nstance
+        MQTT_Client = new Paho.MQTT.Client(WebSocket_MQTT_Broker_URL, MQTT_Client_ID);
+
+        // set callback handlers
+        MQTT_Client.onConnectionLost = onConnectionLost;
+        MQTT_Client.onMessageArrived = onMessageArrived;
+
+        MQTT_Client.connect({onSuccess: onConnect, userName: MQTT_Username, password: MQTT_Password});
+
+    }
+
+    // Subscribe to MQTT Topic
+    function mqtt_Subscribe_to_Topic() {
+        MQTT_Subscribe_Topic = document.getElementById("txt_MQTT_Subscribe_Topic").value;
+        MQTT_Client.subscribe(MQTT_Subscribe_Topic);
+        Set_New_Console_Msg("Subscribed to MQTT Topic: " + "\"" + MQTT_Subscribe_Topic + "\"");
+    }
+
+    // Send MQTT Message
+    function mqtt_Publish_custom() {
+        createRequest();
+        let payload = JSON.stringify(JSON.parse(document.getElementById("req").innerHTML));
+        message = new Paho.MQTT.Message(payload);
+        let key = document.getElementById("reqname").innerHTML;
+        message.destinationName = requestTypes[key];
+        MQTT_Client.send(message);
+        Set_New_Console_Msg("Published " + "\"" + payload + "\"" + "to MQTT Topic: " + "\"" + requestTypes[key] + "\"");
+    }
+
+    // called when the client connects
+    function onConnect() {
+        // Once a connection has been made, make a subscription and send a message.
+        Set_New_Console_Msg("Connected with MQTT Broker: " + "\"" + document.getElementById("txt_MQTT_Broker_URL").value + "\"");
+    }
+
+    // called when the client loses its connection
+    function onConnectionLost(responseObject) {
+        if (responseObject.errorCode !== 0) {
+            Set_New_Console_Msg("Connection Lost with MQTT Broker. Error: " + "\"" + responseObject.errorMessage + "\"");
+        }
+    }
+
+    // called when a message arrives
+    function onMessageArrived(message) {
+        Set_New_Console_Msg("MQTT Message Recieved. " + " Message: " + "\"" + message.payloadString + "\"" + " MQTT Topic: " + "\"" + message.destinationName + "\"" + " QoS Value: " + "\"" + message.qos + "\"");
+    }
+
+
+    // Document Ready Event
+    $(document).ready(function () {
+        //Set default MQTT Broker WebSocket URL
+        document.getElementById("txt_MQTT_Broker_URL").value = "ws://broker.hivemq.com:8000/mqtt";
+        //Generate Random MQTT Clinet ID
+        gen_MQTT_Client_ID();
+
+    })
+
+
+    // Set MQTT Messages to TextArea
+    function Set_New_Console_Msg(text) {
+        document.getElementById("txtAr_Console").value = document.getElementById("txtAr_Console").value + get_Fromatted_Time().toString() + ":  " + text + "\n";
+        document.getElementById("txtAr_Console").scrollTop = document.getElementById("txtAr_Console").scrollHeight;
+    }
+
+    //Clear Console
+    function clear_Console() {
+        document.getElementById("txtAr_Console").value = "";
+    }
+
+    // Get Formatted time in Hour:Minute:Seconds AM/PM format
+    function get_Fromatted_Time() {
+        var dt = new Date();
+        var hours = dt.getHours() == 0 ? "12" : dt.getHours() > 12 ? dt.getHours() - 12 : dt.getHours();
+        var minutes = (dt.getMinutes() < 10 ? "0" : "") + dt.getMinutes();
+        var seconds = dt.getSeconds();
+        var ampm = dt.getHours() < 12 ? "AM" : "PM";
+        var formattedTime = hours + ":" + minutes + ":" + seconds + " " + ampm;
+        return formattedTime;
+    }
+
+    // Randomly generate Client ID
+    function gen_MQTT_Client_ID() {
+        document.getElementById("txt_MQTT_Client_ID").value = Math.floor(100000000000 + Math.random() * 900000000000);
+    }
+
+</script>
+<script>
+    var deleteBtn = document.getElementById("delete");
+    deleteBtn.addEventListener("click", function () {
+        if (confirm("Delete all entries?")) {
+            localStorage.clear();
+        }
+    });
+
+    let meter_list = document.getElementById('meter_list');
+    let gatewayListOptions = document.getElementById('gateway_list').options;
+    let ipOptions = document.getElementById('ip_list').options;
+    let date_from = document.getElementById("dt_from");
+    let date_to = document.getElementById("dt_to");
+    let dt_yesterday = new Date((Date.now() - 86400000)).toISOString().substring(0, 16);
+    let dt_today = new Date((Date.now())).toISOString().substring(0, 16);
+
+    date_from.value = dt_yesterday;
+    date_to.value = dt_today;
+
+    const target = document.getElementById('req');
+    if (target) {
+        const button = target.nextElementSibling;
+        let clipboard = new ClipboardJS(button, {
+            target: target,
+            text: function () {
+                return target.value;
+            }
+        });
+        clipboard.on('success', function (e) {
+            const currentLabel = button.innerHTML;
+
+            if (button.innerHTML === 'Copied!') {
+                return;
+            }
+            button.innerHTML = 'Copied!';
+
+            setTimeout(function () {
+                button.innerHTML = currentLabel;
+            }, 3000)
+        });
+    }
+
+
+</script>

@@ -45,13 +45,12 @@ function populateList() {
     var savedGateway = localStorage.getObj("AllGateways");
     var savedIp = localStorage.getObj("AllIp");
     let requestListOptions = document.getElementById("suggestions");
-
-    requestTypes.forEach(function (item) {
-        var option = document.createElement('option');
-        option.value = item;
+    
+    Object.keys(requestTypes).forEach(function (key) {
+        let option = document.createElement('option');
+        option.value = key;
         requestListOptions.appendChild(option);
-    });
-
+    })
     if (savedGateway !== null) {
         savedGateway.forEach(option =>
             gatewayListOptions.add(
@@ -59,7 +58,6 @@ function populateList() {
             )
         );
     }
-
     if (savedIp !== null) {
         savedIp.forEach(option =>
             ipOptions.add(
@@ -88,7 +86,7 @@ function populateList() {
         var div = document.createElement("div");
         div.textContent = "Please Add Meters";
         div.style.fontStyle = "italic";
-        div.style.color= "Red";
+        div.style.color = "Red";
         meter_list.appendChild(div);
     }
 }
