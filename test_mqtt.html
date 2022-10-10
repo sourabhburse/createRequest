@@ -212,10 +212,12 @@
         createRequest();
         let payload = JSON.stringify(JSON.parse(document.getElementById("req").innerHTML));
         message = new Paho.MQTT.Message(payload);
-        let key = document.getElementById("reqname").innerHTML;
-        message.destinationName = requestTypes[key];
+        let topic = document.getElementById("gateway_list").value;
+        topic = topic + "/general";
+        console.log('Topic', topic);
+        message.destinationName = topic;
         MQTT_Client.send(message);
-        Set_New_Console_Msg("Published " + "\"" + payload + "\"" + "to MQTT Topic: " + "\"" + requestTypes[key] + "\"");
+        Set_New_Console_Msg("Published " + "\"" + payload + "\"" + "to MQTT Topic: " + "\"" + topic + "\"");
     }
 
     // called when the client connects
