@@ -76,7 +76,8 @@
                 </div>
                 <div class="col-sm-2">
                     <label for="requestName">Request:</label>
-                    <input id="requestName" class="form-control" placeholder="Type to search.." autoComplete="on"
+                    <input id="requestName" class="form-control" placeholder="Type to search.." value="Energy Profile"
+                           autoComplete="on"
                            list="suggestions" onfocus="this.value=''" onchange="this.blur();"/>
                     <datalist id="suggestions"></datalist>
                 </div>
@@ -91,7 +92,12 @@
                 <div class="row-sm-3" style="margin-top: 15px">
                     <div class="col-sm-12">
                         <button class="btn btn-primary" onclick="createRequest()">Create Request</button>
-                        <button class="btn btn-primary" onclick="mqtt_Publish_custom()">Create and Publish</button>
+                        <button class="btn btn-primary" id="create_and_publish_btn" onclick="mqtt_Publish_custom()"
+                                disabled>Create and Publish
+                        </button>
+                        <button class="btn btn-primary" id="publishAll" onclick="mqtt_Publish_all()"
+                                disabled>Publish All
+                        </button>
                     </div>
                 </div>
             </div>
@@ -138,18 +144,34 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </form>
+                <div class="row-sm-12">
+                    <div class="col-sm-12"><span id="reqname" style="font-weight: bold"></span>
+                        <div class="card">
+                            <div class="card-body card-bordered d-flex flex-column">
+                                <button class="align-self-end" id="copybtn" data-clipboard-target="#req">
+                                    Copy
+                                </button>
+                                <pre id="req"></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+
             <div class="col">
-                <span id="reqname" style="font-weight: bold"></span>
-                <div class="card">
-                    <div class="card-body card-bordered d-flex flex-column">
-                        <pre id="req"></pre>
-                        <button class="align-self-end" data-clipboard-target="#req">
-                            Copy
-                        </button>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col" style="margin-top: 10px;">
+                            <label class="control-label" for="txtAr_Console">Console:</label>
+                            <button class="btn btn-danger" onclick="clear_Console()">Clear Console</button>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-9">
+                            <textarea type="textarea" class="form-control" rows="12" cols="100"
+                                      id="txtAr_Console" spellcheck="false" style=""></textarea>
                     </div>
                 </div>
             </div>
@@ -157,13 +179,6 @@
     </div>
     <div class="accordion-item">
         <div class="accordion-body">
-            <div class="form-group">
-                <label class="col-sm-2 control-label" for="txtAr_Console">Console:</label>
-                <div class="col-sm-9">
-                            <textarea type="textarea" class="form-control" rows="12" cols="100"
-                                      id="txtAr_Console" style="margin-bottom: 10px;"></textarea>
-                </div>
-            </div>
         </div>
     </div>
 </div>
@@ -173,7 +188,6 @@
 </html>
 
 <script type="text/javascript">
-
     //  Variables
     var WebSocket_MQTT_Broker_URL = "";
     var MQTT_Client_ID = "";
@@ -181,7 +195,12 @@
     var MQTT_Client = "";
     var MQTT_Username = "";
     var MQTT_Password = "";
-
+    let isConnected = 0;
+    let pubAll = 0, gotResponse = 1;
+    let publishBtn = document.getElementById('create_and_publish_btn');
+    let publishAllBtn = document.getElementById('publishAll');
+    let i = 0;
+    let myTimeout;
 
     function mqtt_Connect_with_Broker() {
         // Set variables
@@ -204,7 +223,7 @@
     function mqtt_Subscribe_to_Topic() {
         MQTT_Subscribe_Topic = document.getElementById("txt_MQTT_Subscribe_Topic").value;
         MQTT_Client.subscribe(MQTT_Subscribe_Topic);
-        Set_New_Console_Msg("Subscribed to MQTT Topic: " + "\"" + MQTT_Subscribe_Topic + "\"");
+        Set_New_Console_Msg("Subscribed to Topic: " + "\"" + MQTT_Subscribe_Topic + "\"");
     }
 
     // Send MQTT Message
@@ -217,42 +236,84 @@
         console.log('Topic', topic);
         message.destinationName = topic;
         MQTT_Client.send(message);
-        Set_New_Console_Msg("Published " + "\"" + payload + "\"" + "to MQTT Topic: " + "\"" + topic + "\"");
+        Set_New_Console_Msg("Sent Request to " + "\"" + topic + "\"\n" + payload);
+    }
+
+    function mqtt_Publish_all() {
+        pubAll = 1;
+        Object.keys(requestTypes).forEach(key => {
+            myTimeout = setTimeout(function () {
+                publish_all(key);
+            }, 5000);
+        });
+    }
+
+    function process_next() {
+        clearTimeout(myTimeout);
+    }
+
+    function publish_all(key) {
+        let requestIp = document.getElementById('requestName');
+        requestIp.value = key;
+        createRequest();
+        let payload = JSON.stringify(JSON.parse(document.getElementById("req").innerHTML));
+        message = new Paho.MQTT.Message(payload);
+        let topic = document.getElementById("gateway_list").value;
+        topic = topic + "/general";
+        console.log('Topic', topic);
+        message.destinationName = topic;
+        MQTT_Client.send(message);
+        Set_New_Console_Msg("Sent Request to " + "\"" + topic + "\"\n" + payload);
     }
 
     // called when the client connects
     function onConnect() {
         // Once a connection has been made, make a subscription and send a message.
         Set_New_Console_Msg("Connected with MQTT Broker: " + "\"" + document.getElementById("txt_MQTT_Broker_URL").value + "\"");
+        MQTT_Client.subscribe('meter/#');
+        MQTT_Client.subscribe('gateway/#');
+        Set_New_Console_Msg("Subscribed to MQTT Topic: 'meter/#' & 'gateway/#'");
+        isConnected = 1;
+        publishBtn.disabled = false;
+        publishAllBtn.disabled = false;
+
     }
 
     // called when the client loses its connection
     function onConnectionLost(responseObject) {
         if (responseObject.errorCode !== 0) {
             Set_New_Console_Msg("Connection Lost with MQTT Broker. Error: " + "\"" + responseObject.errorMessage + "\"");
+            isConnected = 0;
+            publishBtn.disabled = true;
+            publishAllBtn.disabled = true;
         }
     }
 
     // called when a message arrives
     function onMessageArrived(message) {
-        Set_New_Console_Msg("MQTT Message Recieved. " + " Message: " + "\"" + message.payloadString + "\"" + " MQTT Topic: " + "\"" + message.destinationName + "\"" + " QoS Value: " + "\"" + message.qos + "\"");
+        Set_New_Console_Msg("Response - " + "Topic: " + "\"" + message.destinationName + "\"\n" + message.payloadString);
+        if (pubAll && !message.destinationName.includes("heartbeat")) {
+            process_next();
+        }
     }
 
 
     // Document Ready Event
     $(document).ready(function () {
         //Set default MQTT Broker WebSocket URL
-        document.getElementById("txt_MQTT_Broker_URL").value = "ws://broker.hivemq.com:8000/mqtt";
+        document.getElementById("txt_MQTT_Broker_URL").value = "ws://5.189.143.142:9001/";
         //Generate Random MQTT Clinet ID
         gen_MQTT_Client_ID();
+        mqtt_Connect_with_Broker();
 
     })
 
 
     // Set MQTT Messages to TextArea
-    function Set_New_Console_Msg(text) {
-        document.getElementById("txtAr_Console").value = document.getElementById("txtAr_Console").value + get_Fromatted_Time().toString() + ":  " + text + "\n";
-        document.getElementById("txtAr_Console").scrollTop = document.getElementById("txtAr_Console").scrollHeight;
+    function Set_New_Console_Msg(text, topic, operation) {
+        let console = document.getElementById("txtAr_Console");
+        console.value = console.value + "[ " + get_Fromatted_Time().toString() + " ]:  " + text + "\n\n";
+        console.scrollTop = console.scrollHeight;
     }
 
     //Clear Console
@@ -277,6 +338,7 @@
     }
 
 </script>
+
 <script>
     var deleteBtn = document.getElementById("delete");
     deleteBtn.addEventListener("click", function () {
@@ -298,7 +360,7 @@
 
     const target = document.getElementById('req');
     if (target) {
-        const button = target.nextElementSibling;
+        const button = document.getElementById('copybtn');
         let clipboard = new ClipboardJS(button, {
             target: target,
             text: function () {

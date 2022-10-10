@@ -96,6 +96,7 @@ function requestGatewaySync() {
 function createRequest() {
     let request_name = document.getElementById("requestName").value;
     document.getElementById("reqname").innerHTML = request_name;
+    document.getElementById('copybtn').style.display = "block";
     switch (String(request_name)) {
         case "Energy Profile":
             requestType2('energyprofile');
