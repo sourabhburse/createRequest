@@ -62,7 +62,7 @@
 
 <div class="container-fluid border" style="width: 80%; ">
     <div class="row">
-        <div class="col-6" >
+        <div class="col-6">
             <div class="container">
                 <div class="col" style="margin: 5px;     padding: 30px">
                     <label for="meter_list">Meter:</label>
@@ -77,7 +77,9 @@
                     </div>
                     <div class="row-md-12">
                         <label for="requestName">Request:</label>
-                        <input id="requestName" class="form-control" placeholder="Type to search.." autoComplete="on"
+                        <input id="requestName" class="form-control" placeholder="Type to search.."
+                               value="Energy Profile"
+                               autoComplete="on"
                                list="suggestions" onfocus="this.value=''" onchange="this.blur();"/>
                         <datalist id="suggestions"></datalist>
                     </div>
@@ -97,9 +99,8 @@
         </div>
         <div class="col-6 position-relative" style="margin-top: 36px;">
             <h5 id="reqname"></h5>
-            <pre id="req"></pre>
-            <button class="position-absolute top-0 end-0" id="copyBtn" data-clipboard-target="#req" style="border: none;
-                background: revert;
+            <pre id="req" style="    margin-left: 10px;    margin-top: 30px;"></pre>
+            <button class="btn btn-success position-absolute top-0 end-0" id="copybtn" data-clipboard-target="#req" style="border: none;
                 border-radius: 34px;
                 margin: 20px;
                 display: none;">
@@ -125,8 +126,8 @@
     let ipOptions = document.getElementById('ip_list').options;
     let date_from = document.getElementById("dt_from");
     let date_to = document.getElementById("dt_to");
-    let dt_yesterday = new Date((Date.now() - 86400000)).toISOString().substring(0, 16);
-    let dt_today = new Date((Date.now())).toISOString().substring(0, 16);
+    let dt_yesterday = new Date((Date.now() - 72000000)).toISOString().substring(0, 16);
+    let dt_today = new Date((Date.now()) + 14400000).toISOString().substring(0, 16);
 
     date_from.value = dt_yesterday;
     date_to.value = dt_today;

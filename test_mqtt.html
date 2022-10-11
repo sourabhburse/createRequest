@@ -352,8 +352,8 @@
     let ipOptions = document.getElementById('ip_list').options;
     let date_from = document.getElementById("dt_from");
     let date_to = document.getElementById("dt_to");
-    let dt_yesterday = new Date((Date.now() - 86400000)).toISOString().substring(0, 16);
-    let dt_today = new Date((Date.now())).toISOString().substring(0, 16);
+    let dt_yesterday = new Date((Date.now() - 72000000)).toISOString().substring(0, 16);
+    let dt_today = new Date((Date.now()) + 14400000).toISOString().substring(0, 16);
 
     date_from.value = dt_yesterday;
     date_to.value = dt_today;
